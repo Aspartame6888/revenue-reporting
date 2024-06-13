@@ -2,13 +2,20 @@ const express = require('express');
 const axios = require('axios');
 const schedule = require('node-schedule');
 const logger = require('./config/logger');
+const bodyParser = require('body-parser');
 const dataRoutes = require('./routes/data');
+const cors = require('cors');
+const morgan = require('morgan');
 
 const app = express();
 const PORT = process.env.PORT || 5008;
 
+app.use(cors());
+app.use(morgan('dev'));
 app.use(express.json());
-app.use('/api/data', dataRoutes);
+// app.use('/api/data', dataRoutes);
+app.use(bodyParser.json());
+app.use('/api', dataRoutes);
 
 const thirdPartyApi1 = 'https://api.example.com/data';
 const thirdPartyApi2 = 'https://api.example2.com/submit';
