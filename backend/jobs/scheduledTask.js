@@ -5,27 +5,11 @@ const fs = require("fs");
 const path = require("path");
 const logger = require("../config/logger");
 const config = require("../config/config");
+const { fetchDataFromThirdParty } = require("../services/dataService");
 
 const sendData = async () => {
   try {
-    const data = {
-      incomeList: [
-        {
-          date: 20240301,
-          brand: "OPPO",
-          model: "PGEM",
-          region: "TH",
-          customId: "Google",
-          media: "商店",
-          currency: "USD",
-          income: 123450000,
-          incomeType: "",
-          customApp: "",
-          impressions: 0,
-        },
-      ],
-    };
-
+    const data = await fetchDataFromThirdParty();
     const timestamp = Date.now().toString();
     const sign = CryptoJS.SHA256(
       config.apiKey + config.apiSecret + timestamp
@@ -60,4 +44,4 @@ const sendData = async () => {
 };
 
 // schedule.scheduleJob("0 0 * * *", sendData);
-schedule.scheduleJob("*/3 * * * *", sendData);
+schedule.scheduleJob("*/1 * * * *", sendData);
