@@ -91,5 +91,5 @@ const sendData = async () => {
 };
 
 // schedule.scheduleJob("0 0 * * *", sendData);
-// schedule.scheduleJob("*/1 * * * *", sendData);
-sendData();
+schedule.scheduleJob("*/1 * * * *", sendData);
+// sendData();
