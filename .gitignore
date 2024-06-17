@@ -5,7 +5,6 @@ yarn-error.log
 
 # Logs
 logs
-*.log
 npm-debug.log*
 
 # Editor directories and files

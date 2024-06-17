@@ -1,0 +1,11 @@
+2024-06-12T08:13:29.311Z info: Server is running on port 5008
+{"level":"info","message":"Server is running on port 5008"}
+{"level":"error","message":"Error: getaddrinfo ENOTFOUND api.example.com"}
+{"level":"info","message":"Server is running on port 5008"}
+{"level":"info","message":"Server is running on port 5008"}
+{"level":"info","message":"Server is running on port 5008"}
+{"level":"info","message":"Server is running on port 5008"}
+{"level":"info","message":"Success: Data sent successfully at 2024-06-13T09:48:00.775Z. Response: {\"code\":\"200\",\"msg\":\"success\",\"data\":null,\"success\":true}"}
+{"level":"info","message":"Success: Data sent successfully at 2024-06-13T09:51:00.658Z. Response: {\"code\":\"200\",\"msg\":\"success\",\"data\":null,\"success\":true}"}
+{"level":"info","message":"Success: Data sent successfully at 2024-06-13T09:54:00.495Z. Response: {\"code\":\"200\",\"msg\":\"success\",\"data\":null,\"success\":true}"}
+{"level":"info","message":"Server is running on port 5008"}
