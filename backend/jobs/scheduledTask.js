@@ -51,7 +51,7 @@ const sendData = async () => {
         response.data
       )}`
     );
-    logger.info(successMessage);
+    // logger.info(successMessage);
     fs.appendFileSync(
       path.join(__dirname, "..", "logs", "success.log"),
       successMessage + "\n"
