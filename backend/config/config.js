@@ -1,7 +1,12 @@
 module.exports = {
   PORT: process.env.PORT || 5008,
-  bsApi:
+  bsApi: [
     "https://backstage.taboola.com/backstage/api/1.0/oppo-lockscreen-de/reports/taboola-news-summary-api/dimensions/by_day",
+    "https://backstage.taboola.com/backstage/api/1.0/oppo-lockscreen-ae/reports/taboola-news-summary-api/dimensions/by_day",
+    // "https://backstage.taboola.com/backstage/api/1.0/oppo-lockscreen-ar/reports/taboola-news-summary-api/dimensions/by_day",
+    // "https://backstage.taboola.com/backstage/api/1.0/oppo-lockscreen-at/reports/taboola-news-summary-api/dimensions/by_day",
+    // "https://backstage.taboola.com/backstage/api/1.0/oppo-lockscreen-au/reports/taboola-news-summary-api/dimensions/by_day",
+  ],
   clientId: "900a288f7bb24948b9dc2fbf7881ceec",
   clientSecret: "637265a785394c439cf9a5c11f2681d6",
   oppoTestApi: "https://global-search-sg-test.wanyol.com/gis/open/income/add",

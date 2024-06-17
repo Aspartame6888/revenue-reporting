@@ -19,8 +19,8 @@ const getYesterdayDate = () => {
 const fetchDataFromThirdParty = async () => {
   try {
     const accessToken = await getAccessToken();
-    const yesterday = getYesterdayDate();
-    const url = `${config.bsApi}?start_date=${yesterday}&end_date=${yesterday}`;
+    const dayBeforeYesterday = getYesterdayDate();
+    const url = `${config.bsApi}?start_date=${dayBeforeYesterday}&end_date=${dayBeforeYesterday}`;
 
     const response = await axios.get(url, {
       headers: {
@@ -28,6 +28,7 @@ const fetchDataFromThirdParty = async () => {
         "Content-Type": "application/json",
       },
     });
+
     const transformedData = transformData(response.data);
     console.log(transformedData);
     return transformedData;
@@ -42,20 +43,20 @@ const transformData = (data) => {
   try {
     const results = data.results || [];
     const transformedData = results.map((result) => ({
-      date: parseInt(result.date.split(" ")[0].replace(/-/g, "")), 
+      date: parseInt(result.date.split(" ")[0].replace(/-/g, "")),
       brand: "OPPO",
       model: "PGEM",
       region: "TH",
       customId: "Google",
       media: "商店",
       currency: result._currency || "USD",
-      income: parseFloat((result.total_revenue || 0) * 1000000), 
+      income: parseFloat((result.total_revenue || 0) * 1000000),
       incomeType: "",
       customApp: "",
-      impressions: parseInt(result.total_impressions || 0), 
+      impressions: parseInt(result.total_impressions || 0),
     }));
 
-    return transformedData;
+    return { incomeList: transformedData };
   } catch (error) {
     throw new Error(`Failed to transform data: ${error.message}`);
   }

@@ -39,35 +39,42 @@ const sendData = async () => {
     };
 
     const response = await axios.post(config.oppoTestApi, data, { headers });
-    const successMessage = {
-      success: true,
-      timestamp: logTime,
-      dataSent: data,
-      response: response.data,
-    };
 
-    logger.info(
-      `Success: Data sent successfully at ${logTime}. Response: ${JSON.stringify(
-        response.data
-      )}`
-    );
-    // logger.info(successMessage);
-    fs.appendFileSync(
-      path.join(__dirname, "..", "logs", "success.log"),
-      successMessage + "\n"
-    );
-    appendToJsonFile(
-      path.join(__dirname, "..", "logs", "successList.json"),
-      successMessage
-    );
+    if (response.status === 200) {
+      const successMessage = {
+        success: true,
+        timestamp: logTime,
+        dataSent: data,
+        response: response.data,
+      };
+
+      logger.info(
+        `Success: Data sent successfully at ${logTime}. Response: ${JSON.stringify(
+          response.data
+        )}`
+      );
+
+      fs.appendFileSync(
+        path.join(__dirname, "..", "logs", "success.log"),
+        JSON.stringify(successMessage) + "\n"
+      );
+      appendToJsonFile(
+        path.join(__dirname, "..", "logs", "successList.json"),
+        successMessage
+      );
+    } else {
+      throw new Error(`Unexpected status code: ${response.status}`);
+    }
   } catch (error) {
-    const errorLog = `Error: ${error.message} at ${new Date().toISOString()}.`;
+    const errorLog = `Error: ${error.message} at ${logTime}.`;
     logger.error(errorLog);
+
     fs.appendFileSync(
       path.join(__dirname, "..", "logs", "error.log"),
       errorLog + "\n"
     );
-    const data = await fetchDataFromThirdParty(); // Fetch data again for logging
+
+    const data = await fetchDataFromThirdParty();
     const errorMessage = {
       success: false,
       timestamp: logTime,
@@ -84,4 +91,5 @@ const sendData = async () => {
 };
 
 // schedule.scheduleJob("0 0 * * *", sendData);
-schedule.scheduleJob("*/1 * * * *", sendData);
+// schedule.scheduleJob("*/1 * * * *", sendData);
+sendData();

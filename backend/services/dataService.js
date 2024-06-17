@@ -9,29 +9,71 @@ const formatDate = (date) => {
   return `${year}-${month}-${day}`;
 };
 
-const getYesterdayDate = () => {
+const getDayBeforeYesterdayDate = () => {
   const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 2);
-  return formatDate(yesterday);
+  const dayBeforeYesterday = new Date(today);
+  dayBeforeYesterday.setDate(today.getDate() - 2);
+  return formatDate(dayBeforeYesterday);
 };
 
 const fetchDataFromThirdParty = async () => {
   try {
     const accessToken = await getAccessToken();
-    const dayBeforeYesterday = getYesterdayDate();
-    const url = `${config.bsApi}?start_date=${dayBeforeYesterday}&end_date=${dayBeforeYesterday}`;
+    const dayBeforeYesterday = getDayBeforeYesterdayDate();
+    const apiRequests = config.bsApi.map((url) => {
+      const lockscreenMatch = url.match(/oppo-lockscreen-([a-z]{2})/);
+      const browserMatch = url.match(/oppo-browser-([a-z]{2})/);
+      const otherMatch = url.match(/oppo-([a-z-]+)/);
 
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
+      let region = "";
+      let media = "";
+
+      if (lockscreenMatch) {
+        region = lockscreenMatch[1].toUpperCase();
+        media = "oppo-lockscreen";
+      } else if (browserMatch) {
+        region = browserMatch[1].toUpperCase();
+        media = "oppo-browser";
+      } else if (otherMatch) {
+        region = otherMatch[1].toUpperCase().replace(/-/g, " ");
+        media = "oppo";
+      } else {
+        console.error(`Invalid URL format: ${url}`);
+        return Promise.resolve(null);
+      }
+
+      console.log(
+        `Fetching data from URL: ${url}, Region: ${region}, Media: ${media}`
+      );
+
+      return axios
+        .get(
+          `${url}?start_date=${dayBeforeYesterday}&end_date=${dayBeforeYesterday}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => ({ data: response.data, region, media }))
+        .catch((err) => {
+          console.error(
+            `Failed to fetch data from URL: ${url}. Error: ${err.message}`
+          );
+          return null;
+        });
     });
 
-    const transformedData = transformData(response.data);
-    console.log(transformedData);
-    return transformedData;
+    const responses = await Promise.all(apiRequests);
+
+    const allData = responses
+      .filter((response) => response !== null)
+      .flatMap((response) =>
+        transformData(response.data, response.region, response.media)
+      );
+
+    return { incomeList: allData };
   } catch (error) {
     throw new Error(
       `Failed to fetch data from third party API: ${error.message}`
@@ -39,24 +81,24 @@ const fetchDataFromThirdParty = async () => {
   }
 };
 
-const transformData = (data) => {
+const transformData = (data, region, media) => {
   try {
     const results = data.results || [];
     const transformedData = results.map((result) => ({
       date: parseInt(result.date.split(" ")[0].replace(/-/g, "")),
       brand: "OPPO",
-      model: "PGEM",
-      region: "TH",
-      customId: "Google",
-      media: "商店",
+      model: "",
+      region: region,
+      customId: "Taboola_Test_20240617",
+      media: media,
       currency: result._currency || "USD",
-      income: parseFloat((result.total_revenue || 0) * 1000000),
+      income: 100000,
       incomeType: "",
       customApp: "",
-      impressions: parseInt(result.total_impressions || 0),
+      impressions: 0,
     }));
 
-    return { incomeList: transformedData };
+    return transformedData;
   } catch (error) {
     throw new Error(`Failed to transform data: ${error.message}`);
   }
