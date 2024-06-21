@@ -7,7 +7,8 @@ const path = require("path");
 const logger = require("../config/logger");
 const config = require("../config/config");
 const { fetchDataFromThirdParty } = require("../services/dataService");
-const xlsx = require("xlsx"); 
+const xlsx = require("xlsx");
+const nodemailer = require("nodemailer");
 
 const app = express();
 
@@ -66,12 +67,44 @@ const generateExcelFile = (data) => {
   return filePath;
 };
 
+const sendEmailWithAttachment = async (filePath) => {
+  let transporter = nodemailer.createTransport({
+    host: "smtp.163.com", // 网易163邮箱的SMTP服务器
+    port: 465, // 使用SSL端口
+    secure: true, // 启用SSL
+    auth: {
+      user: "xie15330835566@163.com", // 你的网易邮箱地址
+      pass: "BHJCXHMUYRZSUZKJ", // 你的网易邮箱授权码
+    },
+  });
+
+  let mailOptions = {
+    from: '"Sender Name" <xie15330835566@163.com>',
+    to: "liang.x@taboola.com",
+    subject: "生成的income_list.xlsx文件",
+    text: "请查收附件中的income_list.xlsx文件。",
+    attachments: [
+      {
+        filename: "income_list.xlsx",
+        path: filePath,
+      },
+    ],
+  };
+
+  let info = await transporter.sendMail(mailOptions);
+  console.log("邮件发送成功: %s", info.messageId);
+};
+
 const sendData = async () => {
+  const filePath = path.join(__dirname, "..", "logs", "income_list.xlsx");
+  await sendEmailWithAttachment(filePath);
+  return;
   const timestamp = Date.now().toString();
   const logTime = new Date().toISOString();
 
   try {
-    const data = await fetchDataFromThirdParty();
+    // const data = await fetchDataFromThirdParty();
+    const data = "";
     console.log(data);
     const sign = CryptoJS.SHA256(
       config.apiKey + config.apiSecret + timestamp
@@ -83,7 +116,7 @@ const sendData = async () => {
       apiKey: config.apiKey,
       sign,
     };
-    console.log(JSON.stringify(data, null, 2))
+    // console.log(JSON.stringify(data, null, 2));
 
     const response = await axios.post(config.oppoTestApi, data, { headers });
 
@@ -110,7 +143,9 @@ const sendData = async () => {
         successMessage
       );
 
-      generateExcelFile(data); 
+      // generateExcelFile(data);
+      // const filePath = path.join(__dirname, "..", "logs", "income_list.xlsx");
+      // await sendEmailWithAttachment(filePath);
     } else {
       throw new Error(`Unexpected status code: ${response.status}`);
     }
