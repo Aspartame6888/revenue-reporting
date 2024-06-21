@@ -1,5 +1,6 @@
 const axios = require("axios");
 const { getAccessToken } = require("./auth");
+const { getStatus } = require("./db");
 const config = require("../config/config");
 
 const formatDate = (date) => {
@@ -12,7 +13,7 @@ const formatDate = (date) => {
 const getDayBeforeYesterdayDate = () => {
   const today = new Date();
   const dayBeforeYesterday = new Date(today);
-  dayBeforeYesterday.setDate(today.getDate() - 2);
+  dayBeforeYesterday.setDate(today.getDate() - 6);
   return formatDate(dayBeforeYesterday);
 };
 
@@ -20,26 +21,47 @@ const fetchDataFromThirdParty = async () => {
   try {
     const accessToken = await getAccessToken();
     const dayBeforeYesterday = getDayBeforeYesterdayDate();
-    const apiRequests = config.bsApi.map((url) => {
-      const lockscreenMatch = url.match(/oppo-lockscreen-([a-z]{2})/);
-      const browserMatch = url.match(/oppo-browser-([a-z]{2})/);
+    const apiRequests = config.bsApi.map(async (url) => {
+      const lockscreenMatch = url.match(/oppo-lockscreen-([a-z-]+)/);
+      const browserMatch = url.match(/oppo-browser-([a-z-]+)/);
+      const searchMatch = url.match(/oppo-search-([a-z-]+)/);
+      const oneplusLockscreenMatch = url.match(/oneplus-lockscreen-([a-z-]+)/);
       const otherMatch = url.match(/oppo-([a-z-]+)/);
 
       let region = "";
       let media = "";
+      let name = "";
 
       if (lockscreenMatch) {
-        region = lockscreenMatch[1].toUpperCase();
+        region = lockscreenMatch[1].toUpperCase().replace(/-/g, " ");
         media = "oppo-lockscreen";
+        name = `oppo-lockscreen-${lockscreenMatch[1]}`;
       } else if (browserMatch) {
-        region = browserMatch[1].toUpperCase();
+        region = browserMatch[1].toUpperCase().replace(/-/g, " ");
         media = "oppo-browser";
+        name = `oppo-browser-${browserMatch[1]}`;
+      } else if (searchMatch) {
+        region = searchMatch[1].toUpperCase().replace(/-/g, " ");
+        media = "oppo-search";
+        name = `oppo-search-${searchMatch[1]}`;
+      } else if (oneplusLockscreenMatch) {
+        region = oneplusLockscreenMatch[1].toUpperCase().replace(/-/g, " ");
+        media = "oneplus-lockscreen";
+        name = `oneplus-lockscreen-${oneplusLockscreenMatch[1]}`;
       } else if (otherMatch) {
         region = otherMatch[1].toUpperCase().replace(/-/g, " ");
         media = "oppo";
+        name = `oppo-${otherMatch[1]}`;
       } else {
         console.error(`Invalid URL format: ${url}`);
-        return Promise.resolve(null);
+        return null;
+      }
+
+      const isActive = await getStatus(name);
+
+      if (!isActive) {
+        console.log(`Skipping inactive URL: ${url}`);
+        return null;
       }
 
       console.log(
@@ -89,13 +111,13 @@ const transformData = (data, region, media) => {
       brand: "OPPO",
       model: "",
       region: region,
-      customId: "Taboola_Test_20240617",
+      customId: "Taboola_Test_20240621",
       media: media,
       currency: result._currency || "USD",
-      income: 100000,
+      income: result.total_revenue >= 1 ? result.total_revenue : 1,
       incomeType: "",
       customApp: "",
-      impressions: 0,
+      impressions: result.total_impressions,
     }));
 
     return transformedData;
