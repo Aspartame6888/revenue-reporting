@@ -79,10 +79,10 @@ const sendEmailWithAttachment = async (filePath) => {
   });
 
   let mailOptions = {
-    from: '"Sender Name" <xie15330835566@163.com>',
-    to: "liang.x@taboola.com",
-    subject: "生成的income_list.xlsx文件",
-    text: "请查收附件中的income_list.xlsx文件。",
+    from: '"Liang.x" <xie15330835566@163.com>',
+    to: ["liang.x@taboola.com", "yuelin.z@taboola.com", "young.z@taboola.com"],
+    subject: `Oppo's revenue data report (20240101-20240624)`, // 邮件主题包含当前日期
+    text: "Please find the attached income_list.xlsx file.",
     attachments: [
       {
         filename: "income_list.xlsx",
@@ -96,29 +96,39 @@ const sendEmailWithAttachment = async (filePath) => {
 };
 
 const sendData = async () => {
-  const filePath = path.join(__dirname, "..", "logs", "income_list.xlsx");
-  await sendEmailWithAttachment(filePath);
-  return;
+  // const filePath = path.join(__dirname, "..", "logs", "income_list.xlsx");
+  // await sendEmailWithAttachment(filePath);
   const timestamp = Date.now().toString();
   const logTime = new Date().toISOString();
 
   try {
-    // const data = await fetchDataFromThirdParty();
-    const data = "";
-    console.log(data);
+    const data = await fetchDataFromThirdParty();
+    // const data = "";
+    // console.log(data);
     const sign = CryptoJS.SHA256(
-      config.apiKey + config.apiSecret + timestamp
+      config.testApiKey + config.testApiSecret + timestamp
     ).toString(CryptoJS.enc.Hex);
+    // const sign = CryptoJS.SHA256(
+    //   config.prdApiKey + config.prdApiSecret + timestamp
+    // ).toString(CryptoJS.enc.Hex);
 
     const headers = {
       Accept: "application/json",
       timestamp,
-      apiKey: config.apiKey,
+      apiKey: config.testApiKey,
       sign,
     };
-    // console.log(JSON.stringify(data, null, 2));
-
-    const response = await axios.post(config.oppoTestApi, data, { headers });
+    // const headers = {
+    //   Accept: "application/json",
+    //   timestamp,
+    //   apiKey: config.prdApiKey,
+    //   sign,
+    // };
+    const response = await axios.post(config.oppoTestApi, data, {
+      headers,
+      timeout: 600000,
+    });
+    // const response = await axios.post(config.oppoPrdApi, data, { headers });
 
     if (response.status === 200) {
       const successMessage = {
@@ -143,6 +153,7 @@ const sendData = async () => {
         successMessage
       );
 
+      // 发送邮件
       // generateExcelFile(data);
       // const filePath = path.join(__dirname, "..", "logs", "income_list.xlsx");
       // await sendEmailWithAttachment(filePath);
@@ -158,19 +169,19 @@ const sendData = async () => {
       errorLog + "\n"
     );
 
-    const data = await fetchDataFromThirdParty();
-    const errorMessage = {
-      success: false,
-      timestamp: logTime,
-      dataSent: data,
-      error: error.message,
-    };
+    // const data = await fetchDataFromThirdParty();
+    // const errorMessage = {
+    //   success: false,
+    //   timestamp: logTime,
+    //   dataSent: data,
+    //   error: error.message,
+    // };
 
     logger.error(`Error: ${error.message} at ${logTime}.`);
-    appendToJsonFile(
-      path.join(__dirname, "..", "logs", "failedList.json"),
-      errorMessage
-    );
+    // appendToJsonFile(
+    //   path.join(__dirname, "..", "logs", "failedList.json"),
+    //   errorMessage
+    // );
   }
 };
 
