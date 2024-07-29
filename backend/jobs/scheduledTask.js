@@ -7,7 +7,7 @@ const path = require("path");
 const logger = require("../config/logger");
 const config = require("../config/config");
 const { fetchDataFromThirdParty } = require("../services/dataService");
-const xlsx = require("xlsx"); 
+const xlsx = require("xlsx");
 
 const app = express();
 
@@ -71,7 +71,9 @@ const sendData = async () => {
   const logTime = new Date().toISOString();
 
   try {
-    const data = await fetchDataFromThirdParty();
+    const startDate = "2024-07-01";
+    const endDate = "2024-07-31";
+    const data = await fetchDataFromThirdParty(startDate, endDate);
     console.log(data);
     const sign = CryptoJS.SHA256(
       config.apiKey + config.apiSecret + timestamp
@@ -83,7 +85,7 @@ const sendData = async () => {
       apiKey: config.apiKey,
       sign,
     };
-    console.log(JSON.stringify(data, null, 2))
+    console.log(JSON.stringify(data, null, 2));
 
     const response = await axios.post(config.oppoTestApi, data, { headers });
 
@@ -110,7 +112,7 @@ const sendData = async () => {
         successMessage
       );
 
-      generateExcelFile(data); 
+      generateExcelFile(data);
     } else {
       throw new Error(`Unexpected status code: ${response.status}`);
     }

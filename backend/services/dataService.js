@@ -17,7 +17,7 @@ const getDayBeforeYesterdayDate = () => {
   return formatDate(dayBeforeYesterday);
 };
 
-const fetchDataFromThirdParty = async () => {
+const fetchDataFromThirdParty = async (startDate, endDate) => {
   try {
     const accessToken = await getAccessToken();
     const dayBeforeYesterday = getDayBeforeYesterdayDate();
@@ -70,7 +70,7 @@ const fetchDataFromThirdParty = async () => {
 
       return axios
         .get(
-          `${url}?start_date=${dayBeforeYesterday}&end_date=${dayBeforeYesterday}`,
+          `${url}?start_date=${startDate}&end_date=${endDate}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -111,7 +111,7 @@ const transformData = (data, region, media) => {
       brand: "OPPO",
       model: "",
       region: region,
-      customId: "Taboola_Test_20240621",
+      customId: "Taboola",
       media: media,
       currency: result._currency || "USD",
       income: result.total_revenue >= 1 ? result.total_revenue : 1,
