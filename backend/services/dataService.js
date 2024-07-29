@@ -60,14 +60,13 @@ const fetchDataFromThirdParty = async () => {
       const isActive = await getStatus(name);
 
       if (!isActive) {
-        console.log(`Skipping inactive URL: ${url}`);
+        // console.log(`Skipping inactive URL: ${url}`);
         return null;
       }
 
-      console.log(
-        `Fetching data from URL: ${url}, Region: ${region}, Media: ${media}`
-      );
-
+      // console.log(
+      //   `Fetching data from URL: ${url}, Region: ${region}, Media: ${media}`
+      // );
       return axios
         .get(
           `${url}?start_date=${dayBeforeYesterday}&end_date=${dayBeforeYesterday}`,

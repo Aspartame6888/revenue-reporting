@@ -2,7 +2,7 @@ const mysql = require("mysql2/promise");
 const config = require("../config/config");
 
 let connection = null;
-let connectionAttempts = 0;
+let connectionTimes = 0;
 
 const connectDB = async () => {
   let retries = 0;
@@ -16,9 +16,9 @@ const connectDB = async () => {
         password: config.dbPassword,
         // database: config.dbName,
       });
-      connectionAttempts += 1;
+      connectionTimes += 1;
       console.log(
-        `Connected to the database. Connection attempts: ${connectionAttempts}`
+        `Connected to the database ${connectionTimes}`
       );
     } catch (error) {
       retries += 1;

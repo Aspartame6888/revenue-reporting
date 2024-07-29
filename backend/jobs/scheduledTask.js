@@ -87,7 +87,13 @@ const sendEmailWithAttachment = async (filePath) => {
 
   let mailOptions = {
     from: '"Liang.x" <xie15330835566@163.com>',
-    to: ["liang.x@taboola.com", "yuelin.z@taboola.com", "young.z@taboola.com","michelle.h@taboola.com","alex.z@taboola.com"],
+    to: [
+      "liang.x@taboola.com",
+      "yuelin.z@taboola.com",
+      "young.z@taboola.com",
+      "michelle.h@taboola.com",
+      "alex.z@taboola.com",
+    ],
     subject: `Oppo's revenue data report (${formattedDate})`,
     text: "Please find the attached income_list.xlsx file.",
     attachments: [
@@ -98,8 +104,14 @@ const sendEmailWithAttachment = async (filePath) => {
     ],
   };
 
-  let info = await transporter.sendMail(mailOptions);
-  console.log("邮件发送成功: %s", info.messageId);
+  try {
+    let info = await transporter.sendMail(mailOptions);
+    console.log("邮件发送成功: %s", info.messageId);
+  } catch (error) {
+    const errorMessage = `Failed to send email: ${error.message}`;
+    console.error(errorMessage);
+    logger.error(errorMessage);
+  }
 };
 
 const sendData = async () => {
@@ -108,6 +120,28 @@ const sendData = async () => {
 
   try {
     const data = await fetchDataFromThirdParty();
+
+    if (!data.incomeList || data.incomeList.length === 0) {
+      const errorMessage = {
+        success: false,
+        timestamp: logTime,
+        error: "No data available to send.",
+      };
+
+      logger.error(`Error: No data available to send at ${logTime}.`);
+
+      fs.appendFileSync(
+        path.join(__dirname, "..", "logs", "error.log"),
+        JSON.stringify(errorMessage) + "\n"
+      );
+      appendToJsonFile(
+        path.join(__dirname, "..", "logs", "errorList.json"),
+        errorMessage
+      );
+
+      return;
+    }
+
     generateExcelFile(data);
     const sign = CryptoJS.SHA256(
       config.prdApiKey + config.prdApiSecret + timestamp
@@ -130,11 +164,7 @@ const sendData = async () => {
         response: response.data,
       };
 
-      logger.info(
-        `Success: Data sent successfully at ${logTime}. Response: ${JSON.stringify(
-          response.data
-        )}`
-      );
+      logger.info(`Success: Data sent successfully at ${logTime}.`);
 
       fs.appendFileSync(
         path.join(__dirname, "..", "logs", "success.log"),
