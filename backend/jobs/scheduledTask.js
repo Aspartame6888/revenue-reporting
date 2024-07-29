@@ -68,20 +68,27 @@ const generateExcelFile = (data) => {
 };
 
 const sendEmailWithAttachment = async (filePath) => {
+  const date = new Date();
+  date.setDate(date.getDate() - 2);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const formattedDate = `${year}${month}${day}`;
+
   let transporter = nodemailer.createTransport({
     host: "smtp.163.com", // 网易163邮箱的SMTP服务器
     port: 465, // 使用SSL端口
     secure: true, // 启用SSL
     auth: {
-      user: "xie15330835566@163.com", // 你的网易邮箱地址
-      pass: "BHJCXHMUYRZSUZKJ", // 你的网易邮箱授权码
+      user: "xie15330835566@163.com", // 网易邮箱地址
+      pass: "BHJCXHMUYRZSUZKJ", // 网易邮箱授权码
     },
   });
 
   let mailOptions = {
     from: '"Liang.x" <xie15330835566@163.com>',
-    to: ["liang.x@taboola.com", "yuelin.z@taboola.com", "young.z@taboola.com"],
-    subject: `Oppo's revenue data report (20240101-20240624)`, // 邮件主题包含当前日期
+    to: ["liang.x@taboola.com", "yuelin.z@taboola.com", "young.z@taboola.com","michelle.h@taboola.com","alex.z@taboola.com"],
+    subject: `Oppo's revenue data report (${formattedDate})`,
     text: "Please find the attached income_list.xlsx file.",
     attachments: [
       {
@@ -96,39 +103,24 @@ const sendEmailWithAttachment = async (filePath) => {
 };
 
 const sendData = async () => {
-  // const filePath = path.join(__dirname, "..", "logs", "income_list.xlsx");
-  // await sendEmailWithAttachment(filePath);
   const timestamp = Date.now().toString();
   const logTime = new Date().toISOString();
 
   try {
     const data = await fetchDataFromThirdParty();
-    // const data = "";
-    // console.log(data);
+    generateExcelFile(data);
     const sign = CryptoJS.SHA256(
-      config.testApiKey + config.testApiSecret + timestamp
+      config.prdApiKey + config.prdApiSecret + timestamp
     ).toString(CryptoJS.enc.Hex);
-    // const sign = CryptoJS.SHA256(
-    //   config.prdApiKey + config.prdApiSecret + timestamp
-    // ).toString(CryptoJS.enc.Hex);
 
     const headers = {
       Accept: "application/json",
       timestamp,
-      apiKey: config.testApiKey,
+      apiKey: config.prdApiKey,
       sign,
     };
-    // const headers = {
-    //   Accept: "application/json",
-    //   timestamp,
-    //   apiKey: config.prdApiKey,
-    //   sign,
-    // };
-    const response = await axios.post(config.oppoTestApi, data, {
-      headers,
-      timeout: 600000,
-    });
-    // const response = await axios.post(config.oppoPrdApi, data, { headers });
+
+    const response = await axios.post(config.oppoPrdApi, data, { headers });
 
     if (response.status === 200) {
       const successMessage = {
@@ -153,10 +145,9 @@ const sendData = async () => {
         successMessage
       );
 
-      // 发送邮件
-      // generateExcelFile(data);
-      // const filePath = path.join(__dirname, "..", "logs", "income_list.xlsx");
-      // await sendEmailWithAttachment(filePath);
+      generateExcelFile(data);
+      const filePath = path.join(__dirname, "..", "logs", "income_list.xlsx");
+      await sendEmailWithAttachment(filePath);
     } else {
       throw new Error(`Unexpected status code: ${response.status}`);
     }
@@ -168,20 +159,6 @@ const sendData = async () => {
       path.join(__dirname, "..", "logs", "error.log"),
       errorLog + "\n"
     );
-
-    // const data = await fetchDataFromThirdParty();
-    // const errorMessage = {
-    //   success: false,
-    //   timestamp: logTime,
-    //   dataSent: data,
-    //   error: error.message,
-    // };
-
-    logger.error(`Error: ${error.message} at ${logTime}.`);
-    // appendToJsonFile(
-    //   path.join(__dirname, "..", "logs", "failedList.json"),
-    //   errorMessage
-    // );
   }
 };
 
@@ -209,4 +186,10 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
+schedule.scheduleJob("0 0 * * *", () => {
+  console.log("Executing scheduled task...");
+  sendData();
+});
+
+// Initial run of sendData
 sendData();

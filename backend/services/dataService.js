@@ -13,7 +13,7 @@ const formatDate = (date) => {
 const getDayBeforeYesterdayDate = () => {
   const today = new Date();
   const dayBeforeYesterday = new Date(today);
-  dayBeforeYesterday.setDate(today.getDate() - 6);
+  dayBeforeYesterday.setDate(today.getDate() - 2);
   return formatDate(dayBeforeYesterday);
 };
 
@@ -111,7 +111,7 @@ const transformData = (data, region, media) => {
       brand: "OPPO",
       model: "",
       region: region,
-      customId: "Taboola_Test_20240621",
+      customId: "Taboola",
       media: media,
       currency: result._currency || "USD",
       income: result.total_revenue >= 1 ? result.total_revenue : 1,
