@@ -71,23 +71,23 @@ const sendData = async () => {
   const logTime = new Date().toISOString();
 
   try {
-    const startDate = "2024-07-01";
-    const endDate = "2024-07-31";
+    const startDate = "2024-07-23";
+    const endDate = "2024-07-27";
     const data = await fetchDataFromThirdParty(startDate, endDate);
     console.log(data);
     const sign = CryptoJS.SHA256(
-      config.apiKey + config.apiSecret + timestamp
+      config.prdApiKey + config.prdApiSecret + timestamp
     ).toString(CryptoJS.enc.Hex);
 
     const headers = {
       Accept: "application/json",
       timestamp,
-      apiKey: config.apiKey,
+      apiKey: config.prdApiKey,
       sign,
     };
     console.log(JSON.stringify(data, null, 2));
 
-    const response = await axios.post(config.oppoTestApi, data, { headers });
+    const response = await axios.post(config.oppoPrdApi, data, { headers });
 
     if (response.status === 200) {
       const successMessage = {
