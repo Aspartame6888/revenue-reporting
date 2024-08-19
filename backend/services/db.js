@@ -50,6 +50,7 @@ const getStatus = async (name) => {
       "SELECT status FROM trc.publishers WHERE name = ?",
       [name]
     );
+    await connection.end();
     return rows[0]?.status === "LIVE";
   } catch (error) {
     // console.error(`Failed to get status for ${name}: ${error.message}`);
