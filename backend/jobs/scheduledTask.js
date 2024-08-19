@@ -166,14 +166,14 @@ const sendData = async () => {
 
       logger.info(`Success: Data sent successfully at ${logTime}.`);
 
-      fs.appendFileSync(
-        path.join(__dirname, "..", "logs", "success.log"),
-        JSON.stringify(successMessage) + "\n"
-      );
-      appendToJsonFile(
-        path.join(__dirname, "..", "logs", "successList.json"),
-        successMessage
-      );
+      // fs.appendFileSync(
+      //   path.join(__dirname, "..", "logs", "success.log"),
+      //   JSON.stringify(successMessage) + "\n"
+      // );
+      // appendToJsonFile(
+      //   path.join(__dirname, "..", "logs", "successList.json"),
+      //   successMessage
+      // );
 
       generateExcelFile(data);
       const filePath = path.join(__dirname, "..", "logs", "income_list.xlsx");
