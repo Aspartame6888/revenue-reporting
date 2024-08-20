@@ -17,7 +17,7 @@ const getDayBeforeYesterdayDate = () => {
   return formatDate(dayBeforeYesterday);
 };
 
-const fetchDataFromThirdParty = async () => {
+const fetchDataFromThirdParty = async (startDate, endDate) => {
   try {
     const accessToken = await getAccessToken();
     const dayBeforeYesterday = getDayBeforeYesterdayDate();
@@ -68,15 +68,12 @@ const fetchDataFromThirdParty = async () => {
       //   `Fetching data from URL: ${url}, Region: ${region}, Media: ${media}`
       // );
       return axios
-        .get(
-          `${url}?start_date=${dayBeforeYesterday}&end_date=${dayBeforeYesterday}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        )
+        .get(`${url}?start_date=${startDate}&end_date=${endDate}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        })
         .then((response) => ({ data: response.data, region, media }))
         .catch((err) => {
           console.error(
