@@ -18,6 +18,7 @@ const getDayBeforeYesterdayDate = () => {
 };
 
 const fetchDataFromThirdParty = async () => {
+  console.log("start fetching Data From ThirdParty");
   try {
     const accessToken = await getAccessToken();
     const dayBeforeYesterday = getDayBeforeYesterdayDate();
@@ -53,10 +54,9 @@ const fetchDataFromThirdParty = async () => {
         media = "oppo";
         name = `oppo-${otherMatch[1]}`;
       } else {
-        console.error(`Invalid URL format: ${url}`);
+        console.log(`Invalid URL format: ${url}`);
         return null;
       }
-
       const isActive = await getStatus(name);
 
       if (!isActive) {
@@ -79,7 +79,7 @@ const fetchDataFromThirdParty = async () => {
         )
         .then((response) => ({ data: response.data, region, media }))
         .catch((err) => {
-          console.error(
+          console.log(
             `Failed to fetch data from URL: ${url}. Error: ${err.message}`
           );
           return null;

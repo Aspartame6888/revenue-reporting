@@ -109,8 +109,8 @@ const sendEmailWithAttachment = async (filePath) => {
     console.log("邮件发送成功: %s", info.messageId);
   } catch (error) {
     const errorMessage = `Failed to send email: ${error.message}`;
-    console.error(errorMessage);
-    logger.error(errorMessage);
+    console.log(errorMessage);
+    // logger.error(errorMessage);
   }
 };
 
@@ -200,7 +200,7 @@ router.get("/download-excel", (req, res) => {
   if (fs.existsSync(filePath)) {
     res.download(filePath, "income_list.xlsx", (err) => {
       if (err) {
-        console.error(err);
+        console.log(err);
         res.status(500).send("Could not download the file.");
       }
     });

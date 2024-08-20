@@ -17,19 +17,15 @@ const connectDB = async () => {
         // database: config.dbName,
       });
       connectionTimes += 1;
-      console.log(
-        `Connected to the database ${connectionTimes}`
-      );
+      console.log(`Connected to the database ${connectionTimes}`);
     } catch (error) {
       retries += 1;
-      console.error(
+      console.log(
         `Failed to connect to the database (Attempt ${retries}/${maxRetries}): ${error.message}`
       );
 
       if (retries >= maxRetries) {
-        console.error(
-          "Max retries reached. Could not connect to the database."
-        );
+        console.log("Max retries reached. Could not connect to the database.");
         throw new Error("Could not connect to the database.");
       } else {
         console.log(`Retrying to connect in ${retries * 2} seconds...`);
@@ -41,6 +37,7 @@ const connectDB = async () => {
 };
 
 const getStatus = async (name) => {
+  console.log("getStatus from database");
   try {
     const connection = await connectDB();
     if (!connection) {
