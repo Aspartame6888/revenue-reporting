@@ -5,6 +5,7 @@ let connection = null;
 let connectionTimes = 0;
 
 const connectDB = async () => {
+  console.log("start connectDB...");
   let retries = 0;
   const maxRetries = 5;
   while (!connection && retries < maxRetries) {
@@ -37,8 +38,8 @@ const connectDB = async () => {
 };
 
 const getStatus = async (name) => {
-  console.log("getStatus from database");
   try {
+    console.log("getStatus from database");
     const connection = await connectDB();
     if (!connection) {
       return false;
@@ -50,7 +51,7 @@ const getStatus = async (name) => {
     await connection.end();
     return rows[0]?.status === "LIVE";
   } catch (error) {
-    // console.error(`Failed to get status for ${name}: ${error.message}`);
+    console.log(`Failed to get status for ${name}: ${error.message}`);
     return false;
   }
 };

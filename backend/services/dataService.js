@@ -57,6 +57,7 @@ const fetchDataFromThirdParty = async () => {
         console.log(`Invalid URL format: ${url}`);
         return null;
       }
+
       const isActive = await getStatus(name);
 
       if (!isActive) {
@@ -96,6 +97,7 @@ const fetchDataFromThirdParty = async () => {
 
     return { incomeList: allData };
   } catch (error) {
+    console.log(`Failed to fetch data from third party API: ${error.message}`);
     throw new Error(
       `Failed to fetch data from third party API: ${error.message}`
     );
