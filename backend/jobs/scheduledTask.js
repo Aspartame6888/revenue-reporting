@@ -76,23 +76,23 @@ const sendEmailWithAttachment = async (filePath) => {
   const formattedDate = `${year}${month}${day}`;
 
   let transporter = nodemailer.createTransport({
-    host: "smtp.163.com", // 网易163邮箱的SMTP服务器
+    host: "smtp.gmail.com", // 网易163邮箱的SMTP服务器
     port: 465, // 使用SSL端口
     secure: true, // 启用SSL
     auth: {
-      user: "xie15330835566@163.com", // 网易邮箱地址
-      pass: "BHJCXHMUYRZSUZKJ", // 网易邮箱授权码
+      user: "xie15330835566@gmail.com", // 网易邮箱地址
+      pass: "xrdl tliv nsgd kdbs", // 网易邮箱授权码
     },
   });
 
   let mailOptions = {
-    from: '"Liang.x" <xie15330835566@163.com>',
+    from: '" TaboolaReport@taboola.com" < TaboolaReport@taboola.com>',
     to: [
       "liang.x@taboola.com",
-      "yuelin.z@taboola.com",
-      "young.z@taboola.com",
-      "michelle.h@taboola.com",
-      "alex.z@taboola.com",
+      // "yuelin.z@taboola.com",
+      // "young.z@taboola.com",
+      // "michelle.h@taboola.com",
+      // "alex.z@taboola.com",
     ],
     subject: `Oppo's revenue data report (${formattedDate})`,
     text: "Please find the attached income_list.xlsx file.",
@@ -144,17 +144,17 @@ const sendData = async () => {
 
     generateExcelFile(data);
     const sign = CryptoJS.SHA256(
-      config.prdApiKey + config.prdApiSecret + timestamp
+      config.testApiKey + config.testApiSecret + timestamp
     ).toString(CryptoJS.enc.Hex);
 
     const headers = {
       Accept: "application/json",
       timestamp,
-      apiKey: config.prdApiKey,
+      apiKey: config.testApiKey,
       sign,
     };
 
-    const response = await axios.post(config.oppoPrdApi, data, { headers });
+    const response = await axios.post(config.oppoTestApi, data, { headers });
 
     if (response.status === 200) {
       const successMessage = {
@@ -216,7 +216,7 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-schedule.scheduleJob("0 0 * * *", () => {
+schedule.scheduleJob('*/1 * * * *', () => {
   console.log("Executing scheduled task...");
   sendData();
 });
