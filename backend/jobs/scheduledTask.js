@@ -86,7 +86,7 @@ const sendEmailWithAttachment = async (filePath) => {
   });
 
   let mailOptions = {
-    from: '"Liang.x" <xie15330835566@163.com>',
+    from: '"noreply_TaboolaReport" <xie15330835566@163.com>',
     to: [
       "liang.x@taboola.com",
       "yuelin.z@taboola.com",
