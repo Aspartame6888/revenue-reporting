@@ -119,7 +119,7 @@ const sendData = async () => {
   const logTime = new Date().toISOString();
 
   try {
-    const data = await fetchDataFromThirdParty("2024-08-15", "2024-08-17");
+    const data = await fetchDataFromThirdParty("2024-09-04", "2024-09-07");
 
     if (!data.incomeList || data.incomeList.length === 0) {
       const errorMessage = {
