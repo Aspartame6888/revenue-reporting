@@ -216,10 +216,10 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-schedule.scheduleJob('*/1 * * * *', () => {
-  console.log("Executing scheduled task...");
-  sendData();
-});
+// schedule.scheduleJob('*/1 * * * *', () => {
+//   console.log("Executing scheduled task...");
+//   sendData();
+// });
 
 // Initial run of sendData
 sendData();
