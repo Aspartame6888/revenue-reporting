@@ -95,7 +95,7 @@ const sendEmailWithAttachment = async (filePath) => {
       "alex.z@taboola.com",
     ],
     //TODO change the date
-    subject: `Oppo's revenue data report (20240918-20240921)`,
+    subject: `Oppo's revenue data report (20240925-20241008)`,
     text: "Please find the attached income_list.xlsx file.",
     attachments: [
       {
@@ -121,7 +121,7 @@ const sendData = async () => {
 
   try {
     //TODO change the date
-    const data = await fetchDataFromThirdParty("2024-09-18", "2024-09-21");
+    const data = await fetchDataFromThirdParty("2024-09-25", "2024-10-08");
 
     if (!data.incomeList || data.incomeList.length === 0) {
       const errorMessage = {
